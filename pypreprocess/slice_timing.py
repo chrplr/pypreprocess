@@ -66,8 +66,8 @@ def get_slice_indices(n_slices, slice_order='ascending',
         slice_order = np.array(slice_order, dtype='int')
 
         assert len(slice_order) == n_slices
-        assert np.all((0 <= slice_order) & (
-            slice_order < n_slices)), slice_order
+#        assert np.all((0 <= slice_order) & (
+#            slice_order < n_slices)), slice_order     # did not work when slice_order consisted of times in millisec
         assert len(set(slice_order)) == n_slices, slice_order
 
         slice_indices = slice_order

@@ -144,13 +144,15 @@ def _do_subject_slice_timing(subject_data, TR, TA=None, spm_dir=None,
 
     # compute nslices
     nslices = load_vols(subject_data.func[0])[0].shape[2]
-    assert 1 <= ref_slice <= nslices, ref_slice
+#  Commented out because ref_slice can be 0 when it is a time @chrplr
+#   assert 1 <= ref_slice <= nslices, ref_slice 
 
-    # compute slice indices / order
-    if not isinstance(slice_order, basestring):
-        slice_order = np.array(slice_order) - 1
-    slice_order = get_slice_indices(nslices, slice_order=slice_order,
-                                    interleaved=interleaved)
+    # compute slice indices / order 
+# commented out because it breaks when slice_order is a list of times @chrplr
+#   if not isinstance(slice_order, basestring):
+#       slice_order = np.array(slice_order) - 1   
+#   slice_order = get_slice_indices(nslices, slice_order=slice_order,
+#                                   interleaved=interleaved) 
 
     # use pure python (pp) code ?
     if software == "python":
@@ -174,7 +176,7 @@ def _do_subject_slice_timing(subject_data, TR, TA=None, spm_dir=None,
         TA = TA.replace("/", "* 1. /")
         TA = eval(TA)
 
-    # compute time of acqusition
+    # compute time of acquisition
     if TA is None:
         TA = TR * (1. - 1. / nslices)
 
@@ -194,8 +196,10 @@ def _do_subject_slice_timing(subject_data, TR, TA=None, spm_dir=None,
     for sess_func in subject_data.func:
         stc_result = stc(in_files=sess_func, time_repetition=TR,
                          time_acquisition=TA, num_slices=nslices,
-                         ref_slice=ref_slice + 1,
-                         slice_order=list(slice_order + 1),  # SPM
+                         # ref_slice=ref_slice + 1,
+                         ref_slice=ref_slice, # if this is a time
+                         #slice_order=list(slice_order + 1),  # SPM
+                         slice_order=slice_order, # SPM12 if these are times @chrplr
                          ignore_exception=False
                          )
         if stc_result.outputs is None:
